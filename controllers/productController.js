@@ -2,6 +2,8 @@
 
 const ProductModel = require('../models/productModel');
 const { scrapeProductData } = require('../scraper/amazonScraper');
+const { scrapeProductDatacheerio } = require('../scraper/cheerioScrapper');
+
 
  // Handle scraping and inserting product
  const scrapeAndInsertProduct = async (req, res) => {
@@ -37,7 +39,39 @@ const { scrapeProductData } = require('../scraper/amazonScraper');
     }
 };
 
+const scrapeAndInsertProductcheerio = async (req, res) => {
+    try {
+        const asin = req.body.asin;
 
+        if (!asin) {
+            return res.status(400).json({ error: 'ASIN is required.' });
+        }
+
+        const productData = await scrapeProductDatacheerio(asin);
+
+        // Log scraped data to verify structure
+        console.log('Scraped Product Data:', productData);
+
+        // Ensure title is present before inserting
+        if (!productData.title) {
+            throw new Error("Product title is missing");
+        }
+
+        // Insert product data into the database
+        const insertedData = await ProductModel.insertProduct(productData);
+        res.status(200).json({ message: 'Product inserted successfully', data: insertedData });
+
+        console.log('Product added successfully:', insertedData);
+    } catch (error) {
+        // Error handling and response structure
+        const errorResponse = {
+            message: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        };
+        res.status(500).json({ error: errorResponse });
+        console.error('Error inserting product:', error);
+    }
+};
 // Handle fetching all products
 const getAllProducts = async (req, res) => {
     try {
@@ -81,5 +115,6 @@ const getProductByIdOrAsin = async (req, res) => {
  
 module.exports = {getProductByIdOrAsin,
     scrapeAndInsertProduct,
+    scrapeAndInsertProductcheerio,
     getAllProducts,
 };

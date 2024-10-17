@@ -1,7 +1,7 @@
     // /routes/productRoutes.js
 
     const express = require('express');
-    const { scrapeAndInsertProduct, getAllProducts } = require('../controllers/productController');
+    const { scrapeAndInsertProduct, getAllProducts,scrapeAndInsertProductcheerio } = require('../controllers/productController');
     const { getProductByIdOrAsin } = require('../controllers/productController');
     const { addItemToEbay } = require('../services/ebayService');
 
@@ -9,6 +9,7 @@
     router.post('/get-product', getProductByIdOrAsin);
      // POST route to scrape and insert product
     router.post('/scrape-product', scrapeAndInsertProduct);
+    router.post('/scrape-products', scrapeAndInsertProductcheerio);
     
     router.post('/addProductToEbay', async (req, res) => {
         console.log('Request Body:', req.body); // Check if the payload is correctly parsed
