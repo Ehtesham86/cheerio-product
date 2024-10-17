@@ -85,7 +85,9 @@ const scrapeAndInsertProduct = async (req, res) => {
     console.error(error); // Log the full error for server-side debugging
   }
 };
-
+app.get('/', (req, res) => {
+    res.send('Welcome to the Amazon Product API!');
+});
 // Routes
 app.post('/scrape-product', scrapeAndInsertProduct);
 
